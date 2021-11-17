@@ -28,3 +28,4 @@ Run the following command (whilst in the same folder as the decoder.js file):
 Replace the example payload shown there with your real one (case doesn't matter).
 
 Paul Hayes - paul@alliot.co.uk
+Jonas Schwartze - j.schwartze@nibelungen-wohnbau.de
