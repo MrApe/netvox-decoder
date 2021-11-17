@@ -170,6 +170,11 @@ function Decoder(bytes, fport) {
 	return decoded;
 }
 
+function merge(obj1, obj2) {
+	for (var attrname in obj2) { obj1[attrname] = obj2[attrname]; }
+	return obj1;
+}
+
 function bcdtonumber(bytes) {
 	var num = 0;
 	var m = 1;
@@ -199,9 +204,41 @@ function bytestofloat16(bytes) {
     return sign * significand * Math.pow(2, exponent);
 }
 
+var number_fields = [
+    "gps_latitude",
+    "gps_longitude",
+    "latitude",
+    "longitude"
+];
+
+function ensure_types(object, keys, type) {
+    var fixed = object;
+    switch (type) {
+        case "String":
+            for (var idx in keys) {
+                if (typeof object[keys[idx]] !== "undefined") {
+                    fixed[keys[idx]] = String(object[keys[idx]]);
+                }
+            }
+            break;
+        case "Number":
+            for (var idx in keys) {
+                if (typeof object[keys[idx]] !== "undefined") {
+                    fixed[keys[idx]] = Number(object[keys[idx]]);
+                }
+            }
+            break;
+    }
+
+    return fixed;
+}
+
 // Chirpstack decoder wrapper
-function Decode(fPort, bytes) {
-	return Decoder(bytes, fPort);
+function Decode(fPort, bytes, variables) {
+	var decoded = Decoder(bytes, fPort, variables);
+	decoded = merge(decoded, variables);
+	ensure_types(decoded, number_fields, "Number");
+	return decoded;
 }
 
 // Direct node.js CLU wrapper (payload bytestring as argument)
